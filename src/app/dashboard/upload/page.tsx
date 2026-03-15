@@ -10,6 +10,9 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { supabase } from "@/lib/supabase";
+import { Database } from "@/lib/database.types";
+
+type ProjectInsert = Database['public']['Tables']['Project']['Insert'];
 
 export default function UploadProjectPage() {
     const router = useRouter();
@@ -96,9 +99,9 @@ export default function UploadProjectPage() {
                 status: 'PENDING'
             };
 
-            const { data: project, error: projectError } = await (supabase
+            const { data: project, error: projectError } = await supabase
                 .from('Project')
-                .insert([payload]) as any)
+                .insert([payload as ProjectInsert])
                 .select()
                 .single();
 

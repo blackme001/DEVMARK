@@ -21,12 +21,15 @@ export default function PaymentsPage() {
     }, [activeTab, user]);
 
     async function loadHistory() {
+        if (!user?.id) return;
+
         try {
             setIsLoading(true);
+            const projectIds = await getProjectIds();
             const { data, error } = await supabase
                 .from('Purchase')
                 .select('*, project:Project(title)')
-                .or(`buyerId.eq.${user?.id},projectId.in.(${await getProjectIds()})`)
+                .or(`buyerId.eq.${user.id},projectId.in.(${projectIds})`)
                 .order('createdAt', { ascending: false });
 
             if (error) throw error;
@@ -41,8 +44,8 @@ export default function PaymentsPage() {
 
     async function getProjectIds() {
         if (!user?.id) return '00000000-0000-0000-0000-000000000000';
-        const { data } = await (supabase.from('Project').select('id').eq('creatorId', user.id) as any);
-        const ids = data?.map((p: any) => p.id) || [];
+        const { data } = await supabase.from('Project').select('id').eq('creatorId', user.id);
+        const ids = (data as { id: string }[] | null)?.map(p => p.id) || [];
         return ids.length > 0 ? ids.join(',') : '00000000-0000-0000-0000-000000000000';
     }
 
