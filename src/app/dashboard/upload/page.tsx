@@ -86,15 +86,15 @@ export default function UploadProjectPage() {
 
             toast.loading("Saving project details...", { id: "upload" });
 
-            const payload = {
+            const payload: ProjectInsert = {
                 title: data.title,
                 description: data.description,
                 category: data.category,
                 price: Number(data.price),
                 techStack: data.techStack.split(",").map(s => s.trim()).filter(Boolean),
-                demoUrl: data.demoUrl,
-                thumbnail: thumbnailKey,
-                sourceFile: sourceKey,
+                demoUrl: data.demoUrl || null,
+                thumbnail: thumbnailKey || null,
+                sourceFile: sourceKey || null,
                 creatorId: user.id,
                 status: 'PENDING'
             };
