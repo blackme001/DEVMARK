@@ -1,5 +1,8 @@
 {
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.ns"]
+  },
   "imports": {
-    "@supabase/functions-js": "jsr:@supabase/functions-js@^2"
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.7"
   }
 }

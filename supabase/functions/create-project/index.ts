@@ -1,5 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7"
+import { createClient } from "@supabase/supabase-js"
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -7,7 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+// Use Deno's native serve for modern Edge Functions
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -47,20 +47,21 @@ serve(async (req) => {
     }
 
     // 4. Execute Insertion
-    const { data, error } = await supabaseClient
+    const { data, error: insertError } = await supabaseClient
       .from('Project')
       .insert([projectPayload])
       .select()
       .single()
 
-    if (error) throw error
+    if (insertError) throw insertError
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 201,
     })
 
-  } catch (error) {
+  } catch (err: unknown) {
+    const error = err as Error;
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
