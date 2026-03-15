@@ -99,15 +99,13 @@ export default function UploadProjectPage() {
                 status: 'PENDING'
             };
 
-            const { data: project, error: projectError } = await (supabase
-                .from('Project') as any)
-                .insert(payload as ProjectInsert)
-                .select()
-                .single();
+            const { data: projectData, error: projectError } = await supabase.functions.invoke('create-project', {
+                body: payload
+            });
 
             if (projectError) throw projectError;
 
-            if (project) {
+            if (projectData) {
                 toast.success("Project created successfully!", { id: "upload" });
                 router.push("/dashboard");
             }
