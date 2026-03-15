@@ -45,7 +45,9 @@ export default function LandingPage() {
           .select('*', { count: 'exact', head: true })
           .eq('status', 'SUCCESS');
 
-        const uniqueCreators = Array.from(new Set(projects?.map(p => p.creatorId))).length;
+        const uniqueCreators = projects 
+          ? Array.from(new Set(projects.map((p: any) => p.creatorId))).length 
+          : 0;
 
         setStats({
           projects: projectCount || 0,
