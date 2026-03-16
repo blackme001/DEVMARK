@@ -22,6 +22,7 @@ const footerLinks = {
         { label: "Contact Us", href: "/contact" },
         { label: "Terms of Service", href: "/terms" },
         { label: "Privacy Policy", href: "/privacy" },
+        { label: "Refund Policy", href: "/refund" },
         { label: "Security", href: "/security" },
     ],
 };
@@ -96,6 +97,7 @@ export default function Footer() {
                     <div className="flex items-center gap-6">
                         <Link href="/terms" className="text-xs text-slate-500 hover:text-white transition-colors">Terms</Link>
                         <Link href="/privacy" className="text-xs text-slate-500 hover:text-white transition-colors">Privacy</Link>
+                        <Link href="/refund" className="text-xs text-slate-500 hover:text-white transition-colors">Refunds</Link>
                         <Link href="/security" className="text-xs text-slate-500 hover:text-white transition-colors">Security</Link>
                     </div>
                 </div>
