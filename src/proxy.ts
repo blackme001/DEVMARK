@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 // This is a simplified middleware for frontend-side route protection.
 // In a real app with HttpOnly cookies, we'd verify the JWT here.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Define protected routes
