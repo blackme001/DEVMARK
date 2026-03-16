@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import AuthListener from "@/components/AuthListener";
 import AiChatbot from "@/components/AiChatbot";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "DevMarket Pro — Premium Developer Marketplace",
