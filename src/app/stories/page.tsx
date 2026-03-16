@@ -48,7 +48,7 @@ export default function SuccessStories() {
                             </div>
                             <h3 className="text-xl font-bold text-navy-dark mb-2">{item.name}</h3>
                             <p className="text-primary text-sm font-semibold mb-4">{item.role}</p>
-                            <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">"{item.story}"</p>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">&quot;{item.story}&quot;</p>
                             <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Achievement</span>
                                 <span className="text-sm font-black text-navy-dark">{item.stats}</span>
