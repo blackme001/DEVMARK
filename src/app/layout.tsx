@@ -39,6 +39,7 @@ export default function RootLayout({
         <Footer />
         <Toaster position="top-right" richColors />
         <AiChatbot />
+        <Analytics />
       </body>
     </html>
   );
