@@ -19,6 +19,8 @@ export interface Database {
           field: string | null
           techStack: string[]
           avatar: string | null
+          subscriptionTier?: 'FREE' | 'ELITE'
+          paddleCustomerId?: string | null
           createdAt: string
         }
         Insert: {
@@ -30,6 +32,8 @@ export interface Database {
           field?: string | null
           techStack?: string[]
           avatar?: string | null
+          subscriptionTier?: 'FREE' | 'ELITE'
+          paddleCustomerId?: string | null
           createdAt?: string
         }
         Update: {
@@ -41,6 +45,8 @@ export interface Database {
           field?: string | null
           techStack?: string[]
           avatar?: string | null
+          subscriptionTier?: 'FREE' | 'ELITE'
+          paddleCustomerId?: string | null
           createdAt?: string
         }
       }
