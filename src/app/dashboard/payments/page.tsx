@@ -50,10 +50,9 @@ export default function PaymentsPage() {
     }
 
     const handleAddMethod = () => {
-        toast.info("Redirecting to Secure Payment Portal...", {
-            description: "You'll be able to add credit cards and digital wallets via our Stripe integration."
+        toast.info("Payments Update in Progress", {
+            description: "New payment methods will be available soon in our updated billing portal."
         });
-        // In production: router.push('/api/stripe/create-portal-session')
     };
 
     return (
@@ -135,7 +134,7 @@ export default function PaymentsPage() {
                                     </div>
 
                                     <div className="p-6 rounded-2xl border border-border bg-white/50 flex items-center gap-4 opacity-70 italic">
-                                        <p className="text-xs text-text-secondary">Protected by industrial-grade Stripe encryption.</p>
+                                        <p className="text-xs text-text-secondary">Protected by industrial-grade payment encryption.</p>
                                     </div>
                                 </div>
                             </section>
@@ -197,21 +196,18 @@ export default function PaymentsPage() {
                                         </div>
                                         <div>
                                             <h2 className="text-xl font-bold text-text-primary">Creator Payouts</h2>
-                                            <p className="text-xs text-text-secondary">Connected via Stripe Connect</p>
+                                            <p className="text-xs text-text-secondary">Direct Revenue Distribution</p>
                                         </div>
                                     </div>
 
                                     <div className="p-5 rounded-3xl bg-white border border-primary/10 flex items-center justify-between mb-8 shadow-sm">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />
                                             <div>
-                                                <p className="text-xs font-bold text-text-primary">Verified Account: {user?.stripeConnectId || 'pending_activation'}</p>
-                                                <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Revenue Flowing: {user?.payoutsEnabled ? 'YES' : 'NO'}</p>
+                                                <p className="text-xs font-bold text-text-primary">Payout Account: Pending Update</p>
+                                                <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Revenue Flowing: NO</p>
                                             </div>
                                         </div>
-                                        <button className="px-4 py-2 bg-navy-dark text-white text-[10px] font-black rounded-xl hover:bg-black transition-colors">
-                                            STRIPE DASHBOARD
-                                        </button>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 mb-8">

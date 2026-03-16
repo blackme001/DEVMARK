@@ -290,12 +290,6 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => {
-                                if (user?.role === 'SELLER' && !user.payoutsEnabled && !user.user_metadata?.payoutsEnabled) {
-                                    toast.error("Payout setup required.", {
-                                        description: "Please complete your payout configuration in Profile Settings before uploading products."
-                                    });
-                                    return;
-                                }
                                 router.push("/dashboard/upload");
                             }}
                             className="btn-primary py-3 px-6 shadow-xl shadow-primary/20 flex items-center gap-2"
@@ -498,10 +492,6 @@ export default function DashboardPage() {
                                         <button
                                             key={i}
                                             onClick={() => {
-                                                if (action.label === "Deploy New Asset" && user?.role === 'SELLER' && !user.payoutsEnabled && !user.user_metadata?.payoutsEnabled) {
-                                                    toast.error("Payout setup required.");
-                                                    return;
-                                                }
                                                 router.push(action.href);
                                             }}
                                             className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-left group"

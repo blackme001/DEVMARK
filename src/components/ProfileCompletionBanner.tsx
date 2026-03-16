@@ -16,8 +16,7 @@ export function ProfileCompletionBanner() {
     const isMissingData = user && (
         !user.field ||
         !user.techStack ||
-        user.techStack.length === 0 ||
-        (user.role === 'SELLER' && !user.payoutsEnabled && !user.user_metadata?.payoutsEnabled)
+        user.techStack.length === 0
     );
 
     if (!user || !isMissingData || dismissed) return null;
@@ -32,8 +31,7 @@ export function ProfileCompletionBanner() {
         const techStack = techStackRaw.split(",").map(s => s.trim()).filter(Boolean);
 
         try {
-            const { error } = await supabase
-                .from("User")
+            const { error } = await (supabase.from("User") as any)
                 .update({ field, techStack })
                 .eq("id", user.id);
 
@@ -65,12 +63,10 @@ export function ProfileCompletionBanner() {
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold italic mb-1 tracking-tight">
-                                    {user.role === 'SELLER' && !user.payoutsEnabled ? "Finish Seller Setup" : "Complete Your Identity"}
+                                    Complete Your Identity
                                 </h3>
                                 <p className="text-slate-400 text-sm font-medium">
-                                    {user.role === 'SELLER' && !user.payoutsEnabled
-                                        ? "Configure your payout method to start listing and selling projects."
-                                        : "Add your field and tech stack to unlock premium features."}
+                                    Add your field and tech stack to unlock premium features and marketplace listings.
                                 </p>
                             </div>
                         </div>

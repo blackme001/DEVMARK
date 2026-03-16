@@ -22,12 +22,12 @@ DevMark is a premium marketplace for developers to buy and sell source code, tem
 - **Auth**: Supabase Auth (Email, Google, GitHub)
 - **Database**: PostgreSQL (via Supabase)
 - **Storage**: Supabase Storage
-- **Payments**: Stripe (Integrated)
+- **Payments**: System Update in Progress
 
 ## 📌 Project Versions & Major Changes
 
 ### v1.3.0 - Monetization & Professional Branding (Current)
-- **Stripe Integration**: Link payment gateway for one-time purchases and subscriptions.
+- **Payment Gateway Update**: Preparing infrastructure for new payment provider integration.
 - **Pricing Page**: New high-conversion pricing plans page.
 - **Professional Onboarding**: Users now choose their Field and Tech Stack upon account creation.
 - **Onboarding Notifications**: Smart alerts for existing users to complete missing professional data.

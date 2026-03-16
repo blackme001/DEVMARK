@@ -10,15 +10,12 @@ interface User {
     field?: string;
     techStack?: string[];
     avatar?: string;
-    payoutsEnabled?: boolean;
-    stripeConnectId?: string;
     user_metadata?: {
         firstName?: string;
         lastName?: string;
         role?: string;
         field?: string;
         techStack?: string[];
-        payoutsEnabled?: boolean;
     };
 }
 

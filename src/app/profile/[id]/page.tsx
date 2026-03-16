@@ -109,7 +109,7 @@ export default function ProfileDetailPage() {
                 senderId: currentUser?.id,
                 receiverId: id,
                 content: messageText,
-            });
+            } as any);
 
             if (error) throw error;
             toast.success("Message transmitted successfully!");

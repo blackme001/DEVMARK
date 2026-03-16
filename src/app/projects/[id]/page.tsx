@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import LivePreview from "@/components/LivePreview";
-import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 
@@ -26,7 +25,6 @@ export default function ProjectDetailPage() {
     const [project, setProject] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [hasPurchased, setHasPurchased] = useState(false);
-    const { initiateCheckout, isLoading: isCheckingOut } = useStripeCheckout();
     const { user: currentUser } = useAuthStore();
 
     useEffect(() => {
@@ -65,24 +63,7 @@ export default function ProjectDetailPage() {
     }, [id, currentUser]);
 
     const handlePurchase = () => {
-        if (!project) return;
-
-        initiateCheckout({
-            items: [{
-                name: project.title,
-                description: project.description,
-                price: project.price,
-                image: project.thumbnail,
-                quantity: 1
-            }],
-            customerEmail: currentUser?.email,
-            mode: "payment",
-            metadata: {
-                type: "PROJECT_PURCHASE",
-                projectId: project.id,
-                buyerId: currentUser?.id
-            }
-        });
+        toast.info("Payments are currently being updated. Please check back later.");
     };
 
     if (loading) {
@@ -201,15 +182,10 @@ export default function ProjectDetailPage() {
                             ) : (
                                 <button
                                     onClick={handlePurchase}
-                                    disabled={isCheckingOut}
-                                    className="flex-1 w-full sm:w-auto px-8 py-5 rounded-2xl bg-primary text-white font-black text-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
+                                    className="flex-1 w-full sm:w-auto px-8 py-5 rounded-2xl bg-slate-200 text-slate-500 font-black text-xl shadow-xl transition-all flex items-center justify-center gap-3 cursor-not-allowed"
                                 >
-                                    {isCheckingOut ? <Loader2 className="w-6 h-6 animate-spin" /> : (
-                                        <>
-                                            <ShoppingCart className="w-6 h-6" />
-                                            Purchase Asset
-                                        </>
-                                    )}
+                                    <ShoppingCart className="w-6 h-6" />
+                                    Payments Paused
                                 </button>
                             )}
                         </div>

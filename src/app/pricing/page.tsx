@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Check, Zap, Rocket, Star, Shield, ArrowRight, X, Loader2, Award } from "lucide-react";
 import Link from "next/link";
-import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const plans = [
     {
@@ -44,30 +44,10 @@ const plans = [
 
 export default function PricingPage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
-    const { initiateCheckout, isLoading } = useStripeCheckout();
     const { user } = useAuthStore();
 
     const handlePlanSelection = (plan: any) => {
-        if (plan.price === "0") {
-            // Free plan logic if needed
-            return;
-        }
-
-        initiateCheckout({
-            items: [{
-                name: plan.name,
-                description: plan.description,
-                price: billingCycle === 'yearly' ? Math.floor(parseInt(plan.price) * 0.8) : parseInt(plan.price),
-                quantity: 1
-            }],
-            customerEmail: user?.email,
-            mode: "subscription",
-            metadata: {
-                type: "SUBSCRIPTION",
-                planName: plan.name,
-                billingCycle
-            }
-        });
+        toast.info("Registration is currently open but subscription upgrades are temporarily paused.");
     };
 
     return (
@@ -140,12 +120,11 @@ export default function PricingPage() {
 
                             <button
                                 onClick={() => handlePlanSelection(plan)}
-                                disabled={isLoading}
                                 className={`w-full h-14 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-3 ${plan.popular
                                     ? "bg-primary text-white hover:scale-[1.02] shadow-xl shadow-primary/30"
                                     : "bg-slate-50 text-navy-dark hover:bg-slate-100 hover:scale-[1.02]"
                                     }`}>
-                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>{plan.cta} <ArrowRight className="w-5 h-5" /></>}
+                                {plan.cta} <ArrowRight className="w-5 h-5" />
                             </button>
                         </div>
                     ))}
@@ -160,7 +139,7 @@ export default function PricingPage() {
                     </div>
                     <h3 className="text-2xl font-black text-navy-dark mb-4 italic underline decoration-primary/20 decoration-4 underline-offset-8">Secure Creator Economy</h3>
                     <p className="text-slate-500 font-medium">
-                        All payments are processed securely via Stripe. You can cancel your Elite subscription at any time with one click. Commissions are deducted automatically upon successful transaction fulfillment.
+                        Our payment infrastructure is currently being upgraded to support more global payment methods. You can still publish assets for free during this transition period.
                     </p>
                 </div>
             </div>
