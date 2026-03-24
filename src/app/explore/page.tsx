@@ -33,8 +33,17 @@ export default function ExplorePage() {
                 setProjects(data || []);
                 setError(null);
             } catch (err: any) {
-                console.error("Failed to load projects:", err);
-                setError("Unable to load projects. Please check your connection.");
+                console.error("Explore Marketplace failed to load projects:", err);
+                
+                // Detection for placeholder/missing config
+                const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                                     !process.env.NEXT_PUBLIC_SUPABASE_URL;
+                
+                if (isPlaceholder) {
+                    setError("Configuration Missing: Please ensure NEXT_PUBLIC_SUPABASE_URL is set in your environment variables.");
+                } else {
+                    setError("Unable to load projects. Please check your connection or database permissions.");
+                }
             } finally {
                 setIsLoading(false);
             }
