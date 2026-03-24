@@ -142,24 +142,24 @@ export default function ProjectDetailPage() {
                             </div>
                         </div>
 
-                        <div className="p-6 rounded-3xl bg-white border border-slate-100 flex items-center justify-between mb-12 shadow-sm">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-surface-alt flex items-center justify-center text-xl font-black text-primary bg-primary/5 border border-primary/10">
+                        <div className="p-1 rounded-[2rem] bg-white border border-slate-100 mb-12 shadow-sm hover:border-primary/20 transition-all">
+                            <Link
+                                href={`/profile/${project.creatorId}`}
+                                className="flex items-center gap-4 p-5 rounded-[1.8rem] hover:bg-slate-50 transition-all group"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-surface-alt flex items-center justify-center text-xl font-black text-primary bg-primary/5 border border-primary/10 group-hover:scale-110 transition-transform">
                                     {project.creator?.firstName?.[0] || project.creator?.email?.[0] || 'A'}
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-slate-400 mb-0.5 font-black uppercase tracking-widest">
                                         Created by
                                     </p>
-                                    <Link
-                                        href={`/profile/${project.creatorId}`}
-                                        className="font-bold text-navy-dark flex items-center gap-1.5 underline decoration-primary/30 underline-offset-4 cursor-pointer hover:text-primary transition-all group"
-                                    >
+                                    <div className="font-bold text-navy-dark flex items-center gap-1.5 underline decoration-primary/30 underline-offset-4 group-hover:text-primary transition-all">
                                         {project.creator?.firstName} {project.creator?.lastName}
                                         <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                                    </Link>
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-center gap-6">
