@@ -17,6 +17,7 @@ type ProjectInsert = Database['public']['Tables']['Project']['Insert'];
 export default function UploadProjectPage() {
     const router = useRouter();
     const [thumbnail, setThumbnail] = React.useState<File | null>(null);
+    const [gallery, setGallery] = React.useState<File[]>([]);
     const [sourceFile, setSourceFile] = React.useState<File | null>(null);
     const [step, setStep] = React.useState(1);
 
@@ -69,6 +70,7 @@ export default function UploadProjectPage() {
             }
 
             let thumbnailKey = "";
+            let galleryKeys: string[] = [];
             let sourceKey = "";
 
             toast.loading("Preparing upload...", { id: "upload" });
@@ -76,6 +78,11 @@ export default function UploadProjectPage() {
             try {
                 toast.loading("Uploading thumbnail...", { id: "upload" });
                 thumbnailKey = await uploadToSupabase(thumbnail);
+
+                if (gallery.length > 0) {
+                    toast.loading(`Uploading gallery (${gallery.length})...`, { id: "upload" });
+                    galleryKeys = await Promise.all(gallery.map(file => uploadToSupabase(file)));
+                }
 
                 toast.loading("Uploading source files...", { id: "upload" });
                 sourceKey = await uploadToSupabase(sourceFile);
@@ -86,7 +93,7 @@ export default function UploadProjectPage() {
 
             toast.loading("Saving project details...", { id: "upload" });
 
-            const payload: ProjectInsert = {
+            const payload: any = {
                 title: data.title,
                 description: data.description,
                 category: data.category,
@@ -94,6 +101,7 @@ export default function UploadProjectPage() {
                 techStack: data.techStack.split(",").map(s => s.trim()).filter(Boolean),
                 demoUrl: data.demoUrl || null,
                 thumbnail: thumbnailKey || null,
+                gallery: galleryKeys,
                 sourceFile: sourceKey || null,
                 creatorId: user.id,
                 status: 'PENDING'
@@ -237,28 +245,57 @@ export default function UploadProjectPage() {
                         {/* STEP 2: FILES */}
                         {step === 2 && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <label className="p-10 rounded-3xl border-2 border-dashed border-border bg-surface-alt flex flex-col items-center justify-center text-center group cursor-pointer hover:border-primary/50 transition-all">
-                                        <input type="file" className="hidden" accept="image/*" onChange={(e) => setThumbnail(e.target.files?.[0] || null)} />
-                                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
-                                            <Upload className={`w-6 h-6 ${thumbnail ? "text-primary" : "text-text-muted"}`} />
-                                        </div>
-                                        <p className="text-sm font-bold text-text-primary truncate max-w-full px-2">
-                                            {thumbnail ? thumbnail.name : "Cover Image"}
-                                        </p>
-                                        <p className="text-[10px] text-text-muted mt-1">1200x800 recommended</p>
-                                    </label>
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <label className="p-10 rounded-3xl border-2 border-dashed border-border bg-surface-alt flex flex-col items-center justify-center text-center group cursor-pointer hover:border-primary/50 transition-all">
+                                            <input type="file" className="hidden" accept="image/*" onChange={(e) => setThumbnail(e.target.files?.[0] || null)} />
+                                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                                <Upload className={`w-6 h-6 ${thumbnail ? "text-primary" : "text-text-muted"}`} />
+                                            </div>
+                                            <p className="text-sm font-bold text-text-primary truncate max-w-full px-2">
+                                                {thumbnail ? thumbnail.name : "Primary Cover"}
+                                            </p>
+                                            <p className="text-[10px] text-text-muted mt-1">Main display image</p>
+                                        </label>
 
-                                    <label className="p-10 rounded-3xl border-2 border-dashed border-border bg-surface-alt flex flex-col items-center justify-center text-center group cursor-pointer hover:border-primary/50 transition-all">
-                                        <input type="file" className="hidden" accept=".zip,.rar,.7z" onChange={(e) => setSourceFile(e.target.files?.[0] || null)} />
-                                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
-                                            <Upload className={`w-6 h-6 ${sourceFile ? "text-primary" : "text-text-muted"}`} />
+                                        <label className="p-10 rounded-3xl border-2 border-dashed border-border bg-surface-alt flex flex-col items-center justify-center text-center group cursor-pointer hover:border-primary/50 transition-all">
+                                            <input type="file" className="hidden" accept=".zip,.rar,.7z" onChange={(e) => setSourceFile(e.target.files?.[0] || null)} />
+                                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                                <Upload className={`w-6 h-6 ${sourceFile ? "text-primary" : "text-text-muted"}`} />
+                                            </div>
+                                            <p className="text-sm font-bold text-text-primary truncate max-w-full px-2">
+                                                {sourceFile ? sourceFile.name : "Source ZIP"}
+                                            </p>
+                                            <p className="text-[10px] text-text-muted mt-1">Deliverable asset</p>
+                                        </label>
+                                    </div>
+
+                                    <div className="p-8 rounded-3xl border-2 border-dashed border-border bg-white space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-bold text-text-primary">Gallery Previews (Up to 5)</label>
+                                            <span className="text-[10px] font-black text-primary bg-primary/5 px-2 py-1 rounded-md uppercase">{gallery.length}/5 Slots</span>
                                         </div>
-                                        <p className="text-sm font-bold text-text-primary truncate max-w-full px-2">
-                                            {sourceFile ? sourceFile.name : "Source ZIP"}
-                                        </p>
-                                        <p className="text-[10px] text-text-muted mt-1">Up to 100MB</p>
-                                    </label>
+                                        <input 
+                                            type="file" 
+                                            multiple 
+                                            accept="image/*" 
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files || []);
+                                                setGallery(files.slice(0, 5));
+                                            }}
+                                            className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/5 file:text-primary hover:file:bg-primary/10 transition-all cursor-pointer"
+                                        />
+                                        {gallery.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 pt-2">
+                                                {gallery.map((file, i) => (
+                                                    <div key={i} className="px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-bold text-navy-dark flex items-center gap-2">
+                                                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                                        {file.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div>

@@ -24,6 +24,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { ProfileCompletionBanner } from "@/components/ProfileCompletionBanner";
+import MessageModal from "@/components/MessageModal";
 
 export default function ProfileDetailPage() {
     const params = useParams();
@@ -35,9 +36,7 @@ export default function ProfileDetailPage() {
     const [stats, setStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
-    const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
-    const [messageText, setMessageText] = useState("");
-    const [isSending, setIsSending] = useState(false);
+    const [messageMode, setMessageMode] = useState<"message" | "quote">("message");
 
     const isOwnProfile = currentUser?.id === id;
 
@@ -94,33 +93,7 @@ export default function ProfileDetailPage() {
         loadProfileData();
     }, [id]);
 
-    const handleMessageSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!isAuthenticated) {
-            toast.error("Please sign in to message creators.");
-            router.push("/auth");
-            return;
-        }
-        if (!messageText.trim()) return;
-
-        try {
-            setIsSending(true);
-            const { error } = await supabase.from('Message').insert({
-                senderId: currentUser?.id,
-                receiverId: id,
-                content: messageText,
-            } as any);
-
-            if (error) throw error;
-            toast.success("Message transmitted successfully!");
-            setMessageText("");
-            setIsMessageModalOpen(false);
-        } catch (err: any) {
-            toast.error(err.message || "Failed to send message.");
-        } finally {
-            setIsSending(false);
-        }
-    };
+    // Handled by shared MessageModal component
 
     if (isLoading) {
         return (
@@ -221,16 +194,16 @@ export default function ProfileDetailPage() {
                         {!isOwnProfile && (
                             <div className="flex flex-col gap-4 lg:w-80 w-full shrink-0">
                                 <button
-                                    onClick={() => setIsMessageModalOpen(true)}
+                                    onClick={() => { setMessageMode("message"); setIsMessageModalOpen(true); }}
                                     className="w-full h-14 rounded-2xl bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
                                 >
                                     <MessageSquare className="w-5 h-5" /> Message Seller
                                 </button>
                                 <button
-                                    onClick={() => setIsQuoteModalOpen(true)}
+                                    onClick={() => { setMessageMode("quote"); setIsMessageModalOpen(true); }}
                                     className="w-full h-14 rounded-2xl bg-white border-2 border-slate-100 text-navy-dark font-black text-lg hover:border-primary/20 hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
                                 >
-                                    <FileText className="w-5 h-5 text-primary" /> Negotiate Terms
+                                    <FileText className="w-5 h-5 text-primary" /> Request Quote
                                 </button>
 
                                 <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 mt-2">
@@ -292,17 +265,29 @@ export default function ProfileDetailPage() {
                             {stats?.projects?.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {stats.projects.map((p: any) => (
-                                        <div key={p.id} className="group p-6 rounded-[2rem] bg-white border border-border hover:border-primary/20 hover:shadow-2xl hover:shadow-navy-dark/5 transition-all">
-                                            <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-3xl mb-6 shadow-sm border border-slate-100">
-                                                📦
+                                        <div key={p.id} className="group rounded-[2.5rem] bg-white border border-border hover:border-primary/20 hover:shadow-2xl hover:shadow-navy-dark/5 transition-all overflow-hidden flex flex-col">
+                                            <div className="aspect-[4/3] bg-slate-50 relative overflow-hidden group-hover:scale-105 transition-transform duration-700">
+                                                <img 
+                                                    src={p.thumbnail} 
+                                                    alt={p.title}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/40 to-transparent"></div>
+                                                <div className="absolute bottom-4 left-4">
+                                                    <span className="px-3 py-1 bg-white/90 backdrop-blur text-navy-dark text-[10px] font-black rounded-lg uppercase tracking-widest">
+                                                        {p.category}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <h3 className="text-xl font-bold text-navy-dark mb-2 uppercase tracking-tight">{p.title}</h3>
-                                            <p className="text-slate-500 text-sm mb-6 line-clamp-2">{p.description}</p>
-                                            <div className="flex items-center justify-between border-t border-slate-50 pt-6">
-                                                <span className="text-2xl font-black text-primary">${p.price}</span>
-                                                <Link href={`/projects/${p.id}`} className="text-sm font-bold text-navy-dark group-hover:text-primary transition-colors flex items-center gap-2">
-                                                    View Details <ArrowRight className="w-4 h-4" />
-                                                </Link>
+                                            <div className="p-8 flex-1 flex flex-col">
+                                                <h3 className="text-xl font-bold text-navy-dark mb-2 uppercase tracking-tight">{p.title}</h3>
+                                                <p className="text-slate-500 text-sm mb-8 line-clamp-2 font-medium italic">{p.description}</p>
+                                                <div className="mt-auto flex items-center justify-between border-t border-slate-50 pt-6">
+                                                    <span className="text-2xl font-black text-primary italic">${p.price}</span>
+                                                    <Link href={`/projects/${p.id}`} className="w-12 h-12 rounded-xl bg-navy-dark text-white flex items-center justify-center hover:bg-primary transition-all group/btn">
+                                                        <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -344,35 +329,13 @@ export default function ProfileDetailPage() {
             </div>
 
             {/* ─── Modals ─── */}
-            {isMessageModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-                    <div className="absolute inset-0 bg-navy-dark/60 backdrop-blur-sm" onClick={() => setIsMessageModalOpen(false)}></div>
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-xl p-10 relative z-10 shadow-2xl animate-in fade-in zoom-in duration-200">
-                        <h2 className="text-3xl font-black text-navy-dark mb-2 italic">Direct Channel</h2>
-                        <p className="text-slate-500 mb-8 font-medium">Send a secure message to {profileUser?.firstName}.</p>
-                        <form onSubmit={handleMessageSubmit} className="space-y-6">
-                            <div>
-                                <label className="block text-xs font-black uppercase text-slate-400 mb-2 tracking-widest">Message Content</label>
-                                <textarea
-                                    required
-                                    rows={4}
-                                    value={messageText}
-                                    onChange={(e) => setMessageText(e.target.value)}
-                                    placeholder="I'm interested in collaborating on..."
-                                    className="w-full p-4 rounded-2xl border border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none"
-                                ></textarea>
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={isSending}
-                                className="w-full btn-primary h-14 justify-center"
-                            >
-                                {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Transmit Message"}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <MessageModal 
+                isOpen={isMessageModalOpen}
+                onClose={() => setIsMessageModalOpen(false)}
+                recipientId={id}
+                recipientName={`${profileUser?.firstName} ${profileUser?.lastName}`}
+                initialMode={messageMode}
+            />
         </div>
     );
 }

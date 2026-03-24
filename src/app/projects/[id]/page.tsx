@@ -13,9 +13,13 @@ import {
     CheckCircle2,
     Loader2,
     Download,
+    MessageSquare,
+    FileText,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import LivePreview from "@/components/LivePreview";
+import ProjectGallery from "@/components/ProjectGallery";
+import MessageModal from "@/components/MessageModal";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 
@@ -25,6 +29,8 @@ export default function ProjectDetailPage() {
     const [project, setProject] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [hasPurchased, setHasPurchased] = useState(false);
+    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [messageMode, setMessageMode] = useState<"message" | "quote">("message");
     const { user: currentUser } = useAuthStore();
 
     useEffect(() => {
@@ -180,13 +186,31 @@ export default function ProjectDetailPage() {
                                     Download Asset
                                 </button>
                             ) : (
-                                <button
-                                    onClick={handlePurchase}
-                                    className="flex-1 w-full sm:w-auto px-8 py-5 rounded-2xl bg-slate-200 text-slate-500 font-black text-xl shadow-xl transition-all flex items-center justify-center gap-3 cursor-not-allowed"
-                                >
-                                    <ShoppingCart className="w-6 h-6" />
-                                    Payments Paused
-                                </button>
+                                <div className="flex-1 w-full flex flex-col gap-3">
+                                    <button
+                                        onClick={handlePurchase}
+                                        className="w-full h-16 rounded-2xl bg-slate-200 text-slate-500 font-black text-lg shadow-xl transition-all flex items-center justify-center gap-3 cursor-not-allowed"
+                                    >
+                                        <ShoppingCart className="w-6 h-6" />
+                                        Payments Paused
+                                    </button>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button 
+                                            onClick={() => { setMessageMode("message"); setIsMessageModalOpen(true); }}
+                                            className="h-12 rounded-xl bg-white border border-slate-200 text-navy-dark font-bold text-xs hover:border-primary/30 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <MessageSquare className="w-4 h-4 text-primary" />
+                                            Message Info
+                                        </button>
+                                        <button 
+                                            onClick={() => { setMessageMode("quote"); setIsMessageModalOpen(true); }}
+                                            className="h-12 rounded-xl bg-white border border-slate-200 text-navy-dark font-bold text-xs hover:border-primary/30 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <FileText className="w-4 h-4 text-primary" />
+                                            Request Quote
+                                        </button>
+                                    </div>
+                                </div>
                             )}
                         </div>
 
@@ -205,29 +229,30 @@ export default function ProjectDetailPage() {
                     {/* Preview Column */}
                     <div className="relative animate-in slide-in-from-bottom-8 duration-700">
                         <div className="sticky top-28">
-                            <div className="aspect-[4/3] rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-2xl bg-white p-3 lg:p-4 hover:shadow-primary/5 transition-all group">
-                                <div className="w-full h-full rounded-2xl overflow-hidden border border-slate-100 shadow-inner group-hover:border-primary/20 transition-all">
-                                    <LivePreview
-                                        url={project.demoUrl}
-                                        html={project.previewHtml || `
-                                          <div class="h-full flex flex-col items-center justify-center bg-slate-50 p-6 text-center">
-                                            <div class="w-20 h-20 bg-primary/20 rounded-3xl mb-6"></div>
-                                            <h2 class="text-2xl font-black text-slate-900 mb-2 italic">Standard Asset Preview</h2>
-                                            <p class="text-slate-500 font-medium italic">High-performance React structure with premium UI tokens.</p>
-                                          </div>
-                                        `}
-                                        title={project.title}
-                                    />
-                                </div>
+                            <div className="rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-2xl bg-white p-3 lg:p-4 hover:shadow-primary/5 transition-all group">
+                                <ProjectGallery 
+                                    images={project.gallery && project.gallery.length > 0 ? project.gallery : [project.thumbnail]} 
+                                    title={project.title} 
+                                />
                             </div>
                             <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] italic">
                                 <Zap className="w-4 h-4 text-primary animate-pulse" />
-                                Fully interactive live preview
+                                Fully interactive image gallery
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <MessageModal 
+                isOpen={isMessageModalOpen}
+                onClose={() => setIsMessageModalOpen(false)}
+                recipientId={project.creatorId}
+                recipientName={`${project.creator?.firstName} ${project.creator?.lastName}`}
+                projectId={project.id}
+                projectTitle={project.title}
+                initialMode={messageMode}
+            />
         </div>
     );
 }
