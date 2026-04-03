@@ -8,18 +8,19 @@ let paddleInstance: Paddle | undefined;
 export async function getPaddle(): Promise<Paddle | undefined> {
     if (paddleInstance) return paddleInstance;
 
-    const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-    if (!token) {
-        console.error("Paddle client token is not configured.");
+    // The user provided this live token directly
+    const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || 'live_7781a8cb7a8910212a14de32d2e';
+
+    try {
+        paddleInstance = await initializePaddle({
+            environment: 'production',
+            token: token
+        });
+        return paddleInstance;
+    } catch (e) {
+        console.error("Failed to initialize Paddle:", e);
         return undefined;
     }
-
-    paddleInstance = await initializePaddle({
-        token,
-        environment: "production",
-    });
-
-    return paddleInstance;
 }
 
 export function usePaddle() {
