@@ -14,32 +14,38 @@ export async function POST(req: NextRequest) {
         console.log("[Paddle Webhook] Received event:", eventType);
 
         if (eventType === "subscription.activated" || eventType === "subscription.updated") {
-            const customerId: string = body?.data?.customer_id;
-            const status: string = body?.data?.status; // "active", "past_due", "canceled"
+            const customerId = body.data.customer_id;
+            const status = body.data.status;
+            const userId = body.data.custom_data?.userId;
 
-            if (customerId && status === "active") {
+            if (userId && status === "active") {
                 const { error } = await (supabaseAdmin as any)
                     .from("User")
-                    .update({ subscriptionTier: "ELITE" })
-                    .eq("paddleCustomerId", customerId);
+                    .update({ 
+                        subscriptionTier: "ELITE",
+                        paddleCustomerId: customerId 
+                    })
+                    .eq("id", userId);
 
                 if (error) {
                     console.error("[Paddle Webhook] Error updating user tier:", error);
+                } else {
+                    console.log(`[Paddle Webhook] Successfully upgraded user ${userId} to ELITE`);
                 }
             }
         }
 
-        if (eventType === "subscription.canceled" || eventType === "subscription.paused") {
-            const customerId: string = body?.data?.customer_id;
+        if (eventType === "subscription.canceled") {
+            const userId = body.data.custom_data?.userId;
 
-            if (customerId) {
+            if (userId) {
                 const { error } = await (supabaseAdmin as any)
                     .from("User")
                     .update({ subscriptionTier: "FREE" })
-                    .eq("paddleCustomerId", customerId);
+                    .eq("id", userId);
 
                 if (error) {
-                    console.error("[Paddle Webhook] Error downgrading user tier:", error);
+                    console.error("[Paddle Webhook] Error downgrading user:", error);
                 }
             }
         }

@@ -113,31 +113,70 @@ export default function PaymentsPage() {
                     <div className="md:col-span-2 space-y-6">
                         {/* ───── Cards & Billing ───── */}
                         {activeTab === "billing" && (
-                            <section className="card-flat p-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                                <div className="flex items-center justify-between mb-8">
-                                    <h2 className="text-xl font-bold text-text-primary">Saved Payment Methods</h2>
-                                    <button onClick={handleAddMethod} className="btn-primary py-2 px-4 text-xs flex items-center gap-2">
-                                        <Plus className="w-4 h-4" /> Add Method
-                                    </button>
-                                </div>
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                {/* Current Plan Card */}
+                                <section className="card-flat p-8 border-primary/20 bg-primary/5 relative overflow-hidden">
+                                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 blur-[40px] rounded-full" />
+                                    <div className="relative z-10">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div>
+                                                <h2 className="text-xl font-bold text-text-primary mb-1">Current Membership</h2>
+                                                <p className="text-xs text-text-secondary">Your marketplace account status</p>
+                                            </div>
+                                            <div className="px-4 py-1.5 rounded-full bg-primary text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                                                {(user as any)?.subscriptionTier === 'ELITE' ? 'Elite Creator' : 'Standard'}
+                                            </div>
+                                        </div>
 
-                                <div className="space-y-4">
-                                    <div className="p-6 rounded-2xl border border-border bg-white flex items-center gap-4 group hover:border-primary/30 transition-all cursor-pointer">
-                                        <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-border">
-                                            <CreditCard className="w-6 h-6 text-slate-400" />
+                                        <div className="p-6 rounded-2xl bg-white border border-primary/10 flex items-center justify-between shadow-sm">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                                                    <Zap className="w-6 h-6 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-navy-dark">
+                                                        {(user as any)?.subscriptionTier === 'ELITE' ? 'Unlimited Distribution' : 'Basic Publisher'}
+                                                    </p>
+                                                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
+                                                        {(user as any)?.subscriptionTier === 'ELITE' ? '10% Commission Rate' : '20% Commission Rate'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {(user as any)?.subscriptionTier !== 'ELITE' && (
+                                                <Link href="/pricing" className="text-primary text-xs font-black underline decoration-primary/30 underline-offset-4 hover:decoration-primary transition-all">
+                                                    UPGRADE NOW
+                                                </Link>
+                                            )}
                                         </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-black text-text-primary">•••• •••• •••• 4242</p>
-                                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Expires 12/26</p>
-                                        </div>
-                                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-lg border border-emerald-100">DEFAULT</span>
+                                    </div>
+                                </section>
+
+                                <section className="card-flat p-8">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <h2 className="text-xl font-bold text-text-primary">Saved Payment Methods</h2>
+                                        <button onClick={handleAddMethod} className="btn-primary py-2 px-4 text-xs flex items-center gap-2">
+                                            <Plus className="w-4 h-4" /> Add Method
+                                        </button>
                                     </div>
 
-                                    <div className="p-6 rounded-2xl border border-border bg-white/50 flex items-center gap-4 opacity-70 italic">
-                                        <p className="text-xs text-text-secondary">Protected by industrial-grade payment encryption.</p>
+                                    <div className="space-y-4">
+                                        <div className="p-6 rounded-2xl border border-border bg-white flex items-center gap-4 group hover:border-primary/30 transition-all cursor-pointer">
+                                            <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-border">
+                                                <CreditCard className="w-6 h-6 text-slate-400" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-black text-text-primary">Paddle Secure Billing</p>
+                                                <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Global Payment Gateway</p>
+                                            </div>
+                                            <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-lg border border-emerald-100">ACTIVE</span>
+                                        </div>
+
+                                        <div className="p-6 rounded-2xl border border-border bg-white/50 flex items-center gap-4 opacity-70 italic">
+                                            <p className="text-xs text-text-secondary">Your subscription and payout details are securely managed via Paddle.</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </section>
+                                </section>
+                            </div>
                         )}
 
                         {/* ───── Transaction History ───── */}

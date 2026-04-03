@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Check, Zap, Rocket, Star, Shield, ArrowRight, X, Loader2, Award } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { usePaddle } from "@/lib/paddle";
 
@@ -51,6 +52,7 @@ const plans = [
 export default function PricingPage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
     const { user } = useAuthStore();
     const paddle = usePaddle();
 
@@ -68,11 +70,22 @@ export default function PricingPage() {
 
         const priceId = billingCycle === "yearly" ? ELITE_YEARLY_PRICE_ID : ELITE_MONTHLY_PRICE_ID;
 
+        const userTier = (user as any)?.subscriptionTier;
+
+        if (userTier === 'ELITE') {
+            toast.success("You are already an Elite Creator!");
+            router.push("/dashboard");
+            return;
+        }
+
         try {
             setIsLoading(true);
             await paddle.Checkout.open({
                 items: [{ priceId, quantity: 1 }],
                 customer: user?.email ? { email: user.email } : undefined,
+                customData: {
+                    userId: user?.id,
+                },
                 settings: {
                     displayMode: "overlay",
                     theme: "dark",
